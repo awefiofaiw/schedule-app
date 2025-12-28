@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>일정 관리</title>
+
+  <!-- 모바일 대응 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 스타일 -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+</head>
+<body>
+
+  <header>
+    <h1>일정 관리</h1>
+  </header>
+
+  <main>
+
+    <!-- ==============================
+         📅 월간 달력
+    ============================== -->
+    <section id="calendar-section">
+      <div id="calendar-header">
+        <button id="cal-prev" aria-label="이전 달">◀</button>
+        <h2 id="cal-title"></h2>
+        <button id="cal-next" aria-label="다음 달">▶</button>
+      </div>
+
+      <div id="calendar-grid">
+        <!-- 요일 -->
+        <div class="cal-day">일</div>
+        <div class="cal-day">월</div>
+        <div class="cal-day">화</div>
+        <div class="cal-day">수</div>
+        <div class="cal-day">목</div>
+        <div class="cal-day">금</div>
+        <div class="cal-day">토</div>
+        <!-- 날짜 칸은 JS에서 생성 -->
+      </div>
+    </section>
+
+    <!-- ==============================
+         오늘 일정
+    ============================== -->
+    <section>
+      <h2>오늘의 일정</h2>
+      <ul id="today-list"></ul>
+    </section>
+
+    <!-- ==============================
+         전체 일정 (접기/펼치기)
+    ============================== -->
+    <section>
+
+      <!-- 제목 + 토글 버튼 -->
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <h2 style="margin:0;">전체 일정</h2>
+        <button
+          id="toggle-all-btn"
+          aria-label="전체 일정 열기"
+          style="font-size:20px; padding:4px 10px;"
+        >
+          +
+        </button>
+      </div>
+
+      <!-- 필터 -->
+      <div id="filter-bar">
+        <button data-filter="all" class="active">전체</button>
+        <button data-filter="active">미완료</button>
+        <button data-filter="completed">완료</button>
+      </div>
+
+      <!-- 검색 -->
+      <input
+        id="search-input"
+        type="text"
+        placeholder="일정 검색"
+        autocomplete="off"
+      />
+
+      <!-- 전체 일정 리스트 -->
+      <ul id="all-list"></ul>
+    </section>
+
+  </main>
+
+  <!-- ==============================
+       일정 입력 폼
+  ============================== -->
+  <form id="schedule-form" style="display:none; margin:16px;">
+    <input
+      type="text"
+      id="title-input"
+      placeholder="일정 제목"
+      autocomplete="off"
+    />
+
+    <input type="date" id="date-input" />
+    <input type="time" id="time-input" />
+
+    <!-- 🔔 알림 (분 전) -->
+    <select id="notify-input">
+      <option value="">알림 없음</option>
+      <option value="10">10분 전</option>
+      <option value="30">30분 전</option>
+      <option value="60">1시간 전</option>
+      <option value="120">2시간 전</option>
+      <option value="1440">1일 전</option>
+    </select>
+
+    <div>
+      <button type="submit">저장</button>
+      <button type="button" id="cancel-btn">취소</button>
+    </div>
+  </form>
+
+  <!-- ==============================
+       일정 추가 버튼
+  ============================== -->
+  <button id="add-btn">+ 일정 추가</button>
+
+  <!-- ==============================
+       JS
+  ============================== -->
+  <script type="module" src="app.js"></script>
+
+</body>
+</html>
