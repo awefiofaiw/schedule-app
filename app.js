@@ -38,6 +38,11 @@ let selectedDate = null;
 const todayList = document.getElementById("today-list");
 const allList = document.getElementById("all-list");
 
+let emptyToday;
+let emptyAll;
+
+
+
 const form = document.getElementById("schedule-form");
 const titleInput = document.getElementById("title-input");
 const dateInput = document.getElementById("date-input");
@@ -122,6 +127,16 @@ function isEditing() {
 // ==============================
 // UI 헬퍼
 // ==============================
+
+function getTodayStr() {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+
 
 function clear(el) {
   el.innerHTML = "";
@@ -219,7 +234,7 @@ function renderCalendar() {
 
   const cells = buildMonthCalendar(currentYear, currentMonth);
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getTodayStr();
   const highlightDate = selectedDate ?? today;
 
   cells.forEach(({ date, day }) => {
@@ -252,7 +267,8 @@ function renderCalendar() {
       div.addEventListener("click", () => {
         if (isEditing()) return;
 
-        const today = new Date().toISOString().slice(0, 10);
+        const today = getTodayStr();
+
 
         if (date === today) {
           selectedDate = null;
@@ -292,6 +308,10 @@ calNext.addEventListener("click", () => {
 // ==============================
 
 function render() {
+
+  if (emptyAll) emptyAll.style.display = "none";
+  if (emptyToday) emptyToday.style.display = "none";
+
   syncFilterUI();
   if (filterBar) {
   filterBar.style.display = showAllList ? "flex" : "none";
@@ -309,7 +329,7 @@ function render() {
   // ------------------------------
   // 1) 오늘 영역(todayList): 선택 날짜 있으면 그 날짜 일정, 없으면 오늘 일정
   // ------------------------------
-  const targetDate = selectedDate ?? new Date().toISOString().slice(0, 10);
+  const targetDate = selectedDate ?? getTodayStr();
 
   if (todaySectionTitle) {
     // 선택 날짜면 제목 바꾸기, 아니면 "오늘의 일정"
@@ -319,13 +339,12 @@ function render() {
   const daySchedules = sorted.filter((s) => s.date === targetDate);
 
   if (daySchedules.length === 0) {
-    const li = document.createElement("li");
-    li.textContent = "일정이 없습니다";
-    li.style.color = "#888";
-    todayList.appendChild(li);
+  if (emptyToday) emptyToday.style.display = "block";
   } else {
-    daySchedules.forEach((s) => todayList.appendChild(createItem(s, true)));
+  if (emptyToday) emptyToday.style.display = "none";
+  daySchedules.forEach((s) => todayList.appendChild(createItem(s, true)));
   }
+
 
   // ------------------------------
   // 2) 전체 일정(allList): 기존 필터/검색 그대로 유지
@@ -342,20 +361,22 @@ function render() {
     const q = searchQuery.toLowerCase();
     filtered = filtered.filter((s) => s.title.toLowerCase().includes(q));
   }
-if (showAllList) {
+  if (showAllList) {
   if (filtered.length === 0) {
-    const li = document.createElement("li");
-    li.textContent = "일정이 없습니다";
-    li.style.color = "#888";
-    allList.appendChild(li);
+    if (emptyAll) emptyAll.style.display = "block";
   } else {
+    if (emptyAll) emptyAll.style.display = "none";
     filtered.forEach((s) => allList.appendChild(createItem(s)));
   }
+  } else {
+  if (emptyAll) emptyAll.style.display = "none";
   }
-  // 🔔 알림/달력
+
+  // 🔔 알림/달력은 항상 실행
   scheduleNotifications();
   renderCalendar();
-} 
+  }
+
 
 
 // ==============================
@@ -509,7 +530,7 @@ function resetForm() {
 cancelButton.addEventListener("click", resetForm);
 
 addButton.addEventListener("click", () => {
-  showAllList = true;
+  
   form.style.display = "block";
   updateTimeInputState();
   titleInput.focus();
@@ -556,6 +577,10 @@ if (dateInput) {
 // ==============================
 
 (async function init() {
+  
+  emptyToday = document.getElementById("empty-today");
+  emptyAll = document.getElementById("empty-all");
+
   loadSchedules();
   loadFilter();
   loadSearch();
@@ -567,6 +592,30 @@ if (dateInput) {
 
   render();
 })();
+
+// ==============================
+// 🕛 날짜 변경(자정) 자동 갱신
+// - 새로고침 없이 "오늘" 관련 UI/달력 강조가 바뀌도록 함
+// ==============================
+
+let lastDayKey = getTodayStr();
+
+setInterval(() => {
+  const nowKey = getTodayStr();
+
+  // 날짜가 바뀌었을 때만 처리
+  if (nowKey !== lastDayKey) {
+    lastDayKey = nowKey;
+
+    // 어제 날짜를 보고 있었다면 오늘로 복귀
+    if (selectedDate && selectedDate < nowKey) {
+      selectedDate = null;
+    }
+
+    render();
+  }
+}, 30 * 1000); // 30초마다 체크
+
 
 calTitle.addEventListener("click", () => {
   const input = prompt("이동할 연-월 입력 (예: 2026-03)");
@@ -582,3 +631,5 @@ calTitle.addEventListener("click", () => {
   currentMonth = m - 1;
   renderCalendar();
 });
+
+

@@ -44,15 +44,24 @@ export function buildDateTime(date, time) {
 // ==============================
 
 export function isPastDate(date) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return new Date(date) < today;
+  const todayStr = getTodayStr();
+  return date < todayStr;
 }
 
+
 export function isToday(date) {
-  const today = new Date().toISOString().slice(0, 10);
-  return date === today;
+  return date === getTodayStr();
 }
+
+
+export function getTodayStr() {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 
 // ==============================
 // 정렬
@@ -74,7 +83,7 @@ export function sortSchedules(schedules) {
 }
 
 // ==============================
-// 🔔 알림 계산 (새 단계 핵심)
+//  알림 계산 (새 단계 핵심)
 // ==============================
 
 /**

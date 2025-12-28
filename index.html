@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>일정 관리</title>
+  <title>dot</title>
 
   <!-- 모바일 대응 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,13 +16,13 @@
 <body>
 
   <header>
-    <h1>일정 관리 앱</h1>
+    <h1>dot</h1>
   </header>
 
   <main>
 
     <!-- ==============================
-         📅 월간 달력
+          월간 달력
     ============================== -->
     <section id="calendar-section">
       <div id="calendar-header">
@@ -48,9 +48,16 @@
          오늘 일정
     ============================== -->
     <section>
-      <h2>오늘의 일정</h2>
-      <ul id="today-list"></ul>
-    </section>
+    <h2>오늘의 일정</h2>
+
+    <!--  오늘 일정이 없을 때 안내 문구 -->
+    <p id="empty-today" class="empty-message" style="display:none;">
+    오늘 일정이 없습니다.
+  </p>
+
+  <ul id="today-list"></ul>
+</section>
+
 
     <!-- ==============================
          전체 일정 (접기/펼치기)
@@ -85,6 +92,13 @@
       />
 
       <!-- 전체 일정 리스트 -->
+       <!--  전체 일정이 없을 때 안내 문구 -->
+      <p id ="empty-all" class="empty-message" style="display:none;">
+        등록된 일정이 없습니다.
+      </p>
+
+      
+
       <ul id="all-list"></ul>
     </section>
 
@@ -104,7 +118,7 @@
     <input type="date" id="date-input" />
     <input type="time" id="time-input" />
 
-    <!-- 🔔 알림 (분 전) -->
+    <!-- 알림 (분 전) -->
     <select id="notify-input">
       <option value="">알림 없음</option>
       <option value="10">10분 전</option>

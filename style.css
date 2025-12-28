@@ -246,3 +246,11 @@ li button {
   background: transparent;
   cursor: default;
 }
+
+
+.empty-message {
+  text-align: center;
+  color: #888;
+  margin: 12px 0;
+  font-size: 14px;
+}
